@@ -2,7 +2,7 @@ class Kairos < Formula
   desc "Personal AI Runtime — local LLM platform with memory, RAG, and MCP"
   homepage "https://github.com/jxroo/kairos"
   url "https://github.com/jxroo/kairos/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  sha256 "bdcb6d65fa99bffac612eac3d6dc6cc19d8a4ca9bc2458d12b855e06a2bc9d71"
   license "MIT"
   head "https://github.com/jxroo/kairos.git", branch: "main"
 
