@@ -1,0 +1,10 @@
+.git
+dist/
+*.tar.gz
+.kairos/
+dashboard/node_modules/
+vecstore/target/
+sdk-python/__pycache__/
+sdk-python/*.egg-info/
+.codex/
+.superpowers/

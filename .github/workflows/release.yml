@@ -1,0 +1,121 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  package:
+    name: Package ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            label: linux-amd64
+          - runner: ubuntu-24.04-arm
+            label: linux-arm64
+          - runner: macos-14
+            label: darwin-arm64
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24.1"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Build release package
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: make package-release VERSION="$REF_NAME"
+
+      - name: Upload tarball
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.label }}
+          path: dist/*.tar.gz
+
+  publish:
+    name: Publish release assets
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: release-artifacts
+
+      - name: Flatten artifacts
+        run: |
+          mkdir -p dist
+          find release-artifacts -name '*.tar.gz' -exec cp {} dist/ \;
+
+      - name: Build checksums
+        run: |
+          cd dist
+          sha256sum *.tar.gz > checksums.txt
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/checksums.txt
+
+  publish-pypi:
+    name: Publish Python SDK to PyPI
+    needs: publish
+    runs-on: ubuntu-latest
+    # Trusted publisher path needs id-token: write. The token path does not
+    # need it. Leaving it enabled is harmless for token-based uploads.
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: python -m pip install --upgrade pip build
+
+      - name: Build package
+        run: python -m build ./sdk-python
+
+      # Preferred path: API token. Runs when the PYPI_API_TOKEN secret is set
+      # in repo/org secrets. See docs/pypi-publishing.md for setup.
+      - name: Publish to PyPI (token)
+        if: ${{ env.HAS_TOKEN == 'true' }}
+        env:
+          HAS_TOKEN: ${{ secrets.PYPI_API_TOKEN != '' }}
+        uses: pypa/gh-action-pypi-publish@v1.14.0
+        with:
+          packages-dir: sdk-python/dist/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+      # Fallback path: trusted publisher (OIDC). Runs when no API token is
+      # set. Requires a matching publisher configured at
+      # https://pypi.org/manage/account/publishing/ (see docs/pypi-publishing.md).
+      - name: Publish to PyPI (trusted publisher)
+        if: ${{ env.HAS_TOKEN != 'true' }}
+        env:
+          HAS_TOKEN: ${{ secrets.PYPI_API_TOKEN != '' }}
+        uses: pypa/gh-action-pypi-publish@v1.14.0
+        with:
+          packages-dir: sdk-python/dist/

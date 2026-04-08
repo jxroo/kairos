@@ -1,0 +1,44 @@
+# Go
+/kairos
+*.exe
+*.test
+*.out
+vendor/
+
+# Rust
+vecstore/target/
+
+# IDE
+.idea/
+.vscode/
+.claude/
+.codex
+.superpowers/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kairos runtime
+.kairos/
+
+# Node (dashboard)
+dashboard/node_modules/
+dashboard/dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+sdk-python/*.egg-info/
+sdk-python/dist/
+
+# Build artifacts
+/dist/
+/build/
+*.so
+*.dylib
+*.dll
+*.h

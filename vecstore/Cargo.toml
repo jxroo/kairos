@@ -1,0 +1,20 @@
+[package]
+name = "kairos-vecstore"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance vector engine for Kairos"
+
+[lib]
+name = "vecstore"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+fastembed = "4"
+usearch = "2"
+anyhow = "1"
+
+[dev-dependencies]
+tempfile = "3"
+
+[build-dependencies]
+cbindgen = "0.28"

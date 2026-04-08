@@ -1,0 +1,52 @@
+version: "2"
+linters:
+  enable:
+    - gocritic
+  settings:
+    errcheck:
+      exclude-functions:
+        - (*go.uber.org/zap.Logger).Sync
+        - (*encoding/json.Encoder).Encode
+        - (*encoding/json.Decoder).Decode
+    gocritic:
+      disabled-checks:
+        - hugeParam
+        - rangeValCopy
+        - sloppyReassign
+        - appendAssign
+        - ifElseChain
+        - dupSubExpr
+        - commentedOutCode
+        - sprintfQuotedString
+      enabled-tags:
+        - diagnostic
+        - performance
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - errcheck
+          - gocritic
+          - staticcheck
+        path: _test\.go
+    paths:
+      - vendor
+      - dashboard/node_modules
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-issues-per-linter: 50
+  max-same-issues: 5
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

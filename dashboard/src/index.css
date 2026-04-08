@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+/* ===== Inter Variable Font — latin-ext (Polish) + latin ===== */
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/dashboard/fonts/Inter-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/dashboard/fonts/Inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/dashboard/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/dashboard/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+}
+
+/* ===== Frost Design Tokens ===== */
+
+@theme {
+  --color-bg: #06060e;
+  --color-accent: #3b82f6;
+  --color-accent-light: #60a5fa;
+  --color-cyan: #22d3ee;
+  --color-error: rgba(248, 113, 113, 0.7);
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* ===== Keyframe Animations ===== */
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes status-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(34, 211, 238, 0.4),
+      0 0 8px rgba(34, 211, 238, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6),
+      0 0 16px rgba(34, 211, 238, 0.3);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== Scrollbar ===== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ===== Component Utilities ===== */
+
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-color: rgba(255, 255, 255, 0.18);
+    border-radius: 18px;
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-elevated {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-top-color: rgba(255, 255, 255, 0.22);
+    border-radius: 18px;
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-hover {
+    transition: all 0.3s ease;
+  }
+  .glass-hover:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-input:focus {
+    border-color: rgba(255, 255, 255, 0.22);
+    outline: none;
+  }
+
+  .accent-gradient {
+    background: linear-gradient(135deg, #3b82f6, #818cf8);
+  }
+}
+
+/* ===== Glow Utilities ===== */
+
+.glow-accent {
+  box-shadow:
+    0 0 16px rgba(59, 130, 246, 0.2),
+    0 0 6px rgba(59, 130, 246, 0.15),
+    inset 0 0 12px rgba(59, 130, 246, 0.05);
+}
+
+/* ===== Animation Utilities ===== */
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.animate-status-glow {
+  animation: status-glow 2.5s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out both;
+}
+.animate-fade-in-up.delay-1 {
+  animation-delay: 50ms;
+}
+.animate-fade-in-up.delay-2 {
+  animation-delay: 100ms;
+}
+.animate-fade-in-up.delay-3 {
+  animation-delay: 150ms;
+}
+.animate-fade-in-up.delay-4 {
+  animation-delay: 200ms;
+}
+.animate-fade-in-up.delay-5 {
+  animation-delay: 250ms;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.05) 60%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  background-size: 200% 100%;
+  animation: gradient-shimmer 1.5s ease-in-out infinite;
+}

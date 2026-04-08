@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-fmt
+      - id: go-vet
+
+  - repo: local
+    hooks:
+      - id: golangci-lint
+        name: golangci-lint
+        entry: golangci-lint run --fix
+        language: system
+        types: [go]
+        pass_filenames: false
+      - id: cargo-fmt
+        name: cargo fmt
+        entry: bash -c 'cd vecstore && cargo fmt -- --check'
+        language: system
+        files: '\.rs$'
+        pass_filenames: false
+      - id: cargo-clippy
+        name: cargo clippy
+        entry: bash -c 'cd vecstore && cargo clippy -- -D warnings'
+        language: system
+        files: '\.rs$'
+        pass_filenames: false

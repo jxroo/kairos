@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    env:
+      CGO_LDFLAGS_ALLOW: '-Wl,-rpath,.*'
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.1'
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust
+        uses: actions/cache@v5
+        with:
+          path: |
+            vecstore/target
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-rust-${{ hashFiles('vecstore/Cargo.lock') }}
+
+      - name: Build Rust library
+        run: cd vecstore && cargo build --release
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Build dashboard
+        run: cd dashboard && npm ci && npm run build
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.11.4
+
+      - name: Go test
+        env:
+          CGO_ENABLED: '1'
+          LD_LIBRARY_PATH: ${{ github.workspace }}/vecstore/target/release
+        run: go test ./... -v
+
+      - name: Run benchmarks
+        env:
+          CGO_ENABLED: '1'
+          LD_LIBRARY_PATH: ${{ github.workspace }}/vecstore/target/release
+        run: go test -bench=. -benchmem -run=^$$ ./...
+        continue-on-error: true
+
+  python-sdk:
+    name: Python SDK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install SDK dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ./sdk-python[dev]
+
+      - name: Run SDK tests
+        run: python -m pytest sdk-python/tests -q
+
+  rust:
+    name: Rust
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache Rust
+        uses: actions/cache@v5
+        with:
+          path: |
+            vecstore/target
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-rust-${{ hashFiles('vecstore/Cargo.lock') }}
+
+      - name: Clippy
+        run: cd vecstore && cargo clippy -- -D warnings
+
+      - name: Test
+        run: cd vecstore && cargo test
